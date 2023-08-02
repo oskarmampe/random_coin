@@ -6,6 +6,7 @@ import curses
 progress_lock = threading.Lock()
 progress = {}
 stop_flag = False
+results = list()
 
 
 def worker_function(index):
@@ -38,7 +39,7 @@ def monitor_function(stdscr):
 
 def main(stdscr):
     threads = list()
-    results = list()
+    global results
     for index in range(10):
         x = threading.Thread(
             target=lambda q, arg1: q.append(worker_function(arg1)),
@@ -58,11 +59,11 @@ def main(stdscr):
 
     monitor_thread.join()  # Wait for the monitor thread to finish
 
-    for result in results:
-        stdscr.addstr(11, 0, f"Number of alt: {result[0]}")
-        stdscr.addstr(12, 0, f"Number of full: {result[1]}")
-    stdscr.refresh()
-    stdscr.getkey()
+    stdscr.clear()
 
 
 curses.wrapper(main)
+
+for result in results:
+    print(f"Number of alt: {result[0]}")
+    print(f"Number of full: {result[1]}\n")
